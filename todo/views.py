@@ -1,8 +1,8 @@
 from django.urls import reverse_lazy
 from django.views import generic
 
-from todo.forms import TodoForm
-from todo.models import Task
+from todo.forms import TodoForm, TagForm
+from todo.models import Task, Tag
 
 
 class TaskListView(generic.ListView):
@@ -26,5 +26,30 @@ class TaskUpdateView(generic.UpdateView):
 
 class TaskDeleteView(generic.DeleteView):
     model = Task
+    fields = ["__all__"]
+    success_url = reverse_lazy("todo_list.html")
+
+
+class TagListView(generic.ListView):
+    model = Tag
+    fields = ["__all__"]
+
+
+class TagCreateView(generic.CreateView):
+    model = Tag
+    fields = ["__all__"]
+    form_class = TagForm
+    success_url = reverse_lazy("todo_list.html")
+
+
+class TagUpdateView(generic.UpdateView):
+    model = Tag
+    fields = ["__all__"]
+    form_class = TagForm
+    success_url = reverse_lazy("todo_list.html")
+
+
+class TagDeleteView(generic.DeleteView):
+    model = Tag
     fields = ["__all__"]
     success_url = reverse_lazy("todo_list.html")
