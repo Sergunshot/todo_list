@@ -37,16 +37,19 @@ class TagListView(generic.ListView):
 class TagCreateView(generic.CreateView):
     model = Tag
     form_class = TagForm
-    success_url = reverse_lazy("tag_list.html")
+    template_name = "tag_form.html"
+    success_url = reverse_lazy("todo:tag-list")
 
 
 class TagUpdateView(generic.UpdateView):
     model = Tag
     form_class = TagForm
-    success_url = reverse_lazy("tag_list.html")
+    template_name = "tag_form.html"
+    success_url = reverse_lazy("todo:tag-list")
 
 
 class TagDeleteView(generic.DeleteView):
     model = Tag
     fields = ["__all__"]
-    success_url = reverse_lazy("tag_list.html")
+    template_name = "tag_confirm_delete.html"
+    success_url = reverse_lazy("todo:tag-list")
