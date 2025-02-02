@@ -1,3 +1,4 @@
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -13,19 +14,22 @@ class TaskListView(generic.ListView):
 class TaskCreateView(generic.CreateView):
     model = Task
     form_class = TodoForm
-    success_url = reverse_lazy("todo_list.html")
+    template_name = "task_form.html"
+    success_url = reverse_lazy("todo:todo-list")
 
 
 class TaskUpdateView(generic.UpdateView):
     model = Task
     form_class = TodoForm
-    success_url = reverse_lazy("todo_list.html")
+    template_name = "task_form.html"
+    success_url = reverse_lazy("todo:todo-list")
 
 
 class TaskDeleteView(generic.DeleteView):
     model = Task
     fields = ["__all__"]
-    success_url = reverse_lazy("todo_list.html")
+    template_name = "task_confirm_delete.html"
+    success_url = reverse_lazy("todo:todo-list")
 
 
 class TagListView(generic.ListView):
@@ -53,3 +57,15 @@ class TagDeleteView(generic.DeleteView):
     fields = ["__all__"]
     template_name = "tag_confirm_delete.html"
     success_url = reverse_lazy("todo:tag-list")
+
+
+def change_status(request: HttpRequest, pk) -> HttpResponse:
+    task = Task.objects.get(pk=pk)
+    if task.decision:
+        task.decision = False
+        task.save()
+    else:
+        task.decision = True
+        task.save()
+
+    return HttpResponseRedirect(reverse_lazy("todo:todo-list"))
