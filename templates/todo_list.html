@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+  <style>
+    ul li {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+ul li:last-child {
+    border-bottom: none;
+}
+.grey-btn {
+    background-color: grey;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+    border-radius: 3px;
+}
+a.button {
+    background-color: green;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+    border-radius: 3px;
+}
+  </style>
+  <h1>
+    TODO list
+    <a href="{% url "todo:task-create" %}" class="btn btn-primary link-to-page" style="float:right">
+      Add task
+    </a>
+  </h1>
+  {% if task_list %}
+    <ul style="list-style: none ">
+      {% for task in task_list %}
+        <li>
+          <strong>
+            {{ task.content }}
+            {% if task.decision %}
+              <strong style="color:green"> Done</strong><a href="{% url "todo:task-change-status" pk=task.id %}" class="grey-btn" style="float:right">Undo</a>
+            {% else %}
+              <strong style="color:red">Not done</strong><a href="{% url "todo:task-change-status" pk=task.id %}" class="button" style="float:right">Complete</a>
+            {% endif %}
+          </strong>
+          <br>
+          <br>
+          Created: {{ task.task_create|date:"F d, Y, g:i a" }}
+          {% if task.deadline %}
+            <span style="color: red">Deadline: {{ task.deadline|date:"F d, Y, g:i a" }}</span>
+          {% endif %}
+          <br>
+          <br>
+          Tags: {{ task.tags.name }} 
+          <a href="{% url "todo:task-update" pk=task.id %}">Update</a>
+          <a href="{% url "todo:task-delete" pk=task.id %}">Delete</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no cars in taxi</p>
+  {% endif %}
+{% endblock %}
