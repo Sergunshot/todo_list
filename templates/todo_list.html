@@ -1,62 +1,88 @@
 {% extends "base.html" %}
-{% block content %}
-  <style>
-    ul li {
-    border-bottom: 1px solid #ccc;
-    padding: 10px 0;
-}
+{% load crispy_forms_filters %}
 
-ul li:last-child {
-    border-bottom: none;
-}
-.grey-btn {
-    background-color: grey;
-    color: white;
-    padding: 5px;
-    text-decoration: none;
-    border-radius: 3px;
-}
-a.button {
-    background-color: green;
-    color: white;
-    padding: 5px;
-    text-decoration: none;
-    border-radius: 3px;
-}
-  </style>
-  <h1>
-    TODO list
-    <a href="{% url "todo:task-create" %}" class="btn btn-primary link-to-page" style="float:right">
-      Add task
-    </a>
-  </h1>
+{% block content %}
+  <div class="row">
+    <div class="col-md-8">
+      <h1> Tasks List</h1>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'todo:task-create' %}" class="btn btn-primary link-to-page">
+        + Create
+      </a>
+    </div>
+  </div>
+
   {% if task_list %}
-    <ul style="list-style: none ">
-      {% for task in task_list %}
-        <li>
-          <strong>
-            {{ task.content }}
-            {% if task.decision %}
-              <strong style="color:green"> Done</strong><a href="{% url "todo:task-change-status" pk=task.id %}" class="grey-btn" style="float:right">Undo</a>
-            {% else %}
-              <strong style="color:red">Not done</strong><a href="{% url "todo:task-change-status" pk=task.id %}" class="button" style="float:right">Complete</a>
-            {% endif %}
-          </strong>
-          <br>
-          <br>
-          Created: {{ task.task_create|date:"F d, Y, g:i a" }}
-          {% if task.deadline %}
-            <span style="color: red">Deadline: {{ task.deadline|date:"F d, Y, g:i a" }}</span>
+  <div class="row">
+    <div class="col-md-12">
+  <table class="table table-hover table-striped">
+
+  {% for task in task_list %}
+    <tr>
+      <td>
+        <span class="font-weight-bold h5">{{ task.content }}</span>
+
+          {% if task.decision %}
+            <span class="font-weight-bold text-success">Done</span>
+          {% else %}
+            <span class="font-weight-bold text-danger">Not done</span>
           {% endif %}
-          <br>
-          <br>
-          Tags: {{ task.tags.name }} 
-          <a href="{% url "todo:task-update" pk=task.id %}">Update</a>
-          <a href="{% url "todo:task-delete" pk=task.id %}">Delete</a>
-        </li>
-      {% endfor %}
-    </ul>
+      <br>
+        Creation: {{ task.creation_date|date:"M d, Y, H:i"  }}
+        {% if task.deadline %}
+          | <span class="font-weight-bold text-danger"> Deadline: {{ task.deadline|date:"D, d M Y"  }}</span>
+        {% endif %}
+      <br>
+      {% if task.tags %}
+        <span class="text-muted font-weight-bold h5">
+          Tags:
+          {% for tag in task.tags.all %}
+            {{ tag }}
+          {% endfor %}
+        </span>
+      {% endif %}
+
+      </span>
+      </td>
+      <td>
+        <a class="link-info" href="{% url 'todo:task-update' pk=task.id %}">
+          <span class="font-weight-bold">Update</span>
+        </a>
+      </td>
+      <td>
+        <a class="link-danger" href="{% url 'todo:task-delete' pk=task.id %}">
+          <span class="font-weight-bold">Delete</span>
+        </a>
+      </td>
+      <td>
+
+          <form action="{% url 'todo:task-change-status' pk=task.id %}" method="post">
+            {% csrf_token %}
+
+            {% if task.decision %}
+              <button type="submit" class="btn btn-sm btn-outline-dark link-to-page">
+                <span class="font-weight-bold">Undo</span>
+              </button>
+            {% else %}
+              <button type="submit" class="btn btn-sm btn-outline-success link-to-page">
+                <span class="font-weight-bold">Complete</span>
+              </button>
+            {% endif %}
+
+            </button>
+          </form>
+
+      </td>
+    </tr>
+
+  {% endfor %}
+
+  </table>
+    </div>
+  </div>
   {% else %}
-    <p>There are no cars in taxi</p>
+    <p>There are no tasks in the system.</p>
   {% endif %}
+
 {% endblock %}
